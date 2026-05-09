@@ -179,13 +179,8 @@ input.input-field:-webkit-autofill:active {
 
   .download-card {
     @apply w-full max-w-[416px] mx-auto text-center text-white;
-<<<<<<< HEAD
-    background: #2D4E69;
-    padding: 33px 31px 35px;
-=======
     background: var(--primary-gradient);
     padding: 34px 32px 36px;
->>>>>>> b9a008ca7dc4235e9a729d52ba2a5246df926f75
     border-radius: 5px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
   }
