@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 import Header from "../components/Header";
 import AuthLayout from "../components/AuthLayout";
 import DownloadCard from "../components/DownloadCard";
+import VideoSection from "../components/VideoSection";
 import WhatsAppButton from "../components/WhatsAppButton";
 import Footer from "../components/Footer";
 
@@ -23,85 +24,148 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // Check existing session (for OAuth)
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        // Ensure profile exists for OAuth users
+        try {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("id", session.user.id)
+            .single();
+
+          if (!profile) {
+            await createProfileFallback(
+              session.user.id,
+              session.user.user_metadata?.full_name || session.user.email?.split("@")[0],
+              session.user.email || "",
+              session.user.user_metadata?.phone || ""
+            );
+          }
+        } catch (err) {
+          console.warn("Could not check/create profile:", err);
+        }
+        navigate("/dashboard");
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
   const validateForm = () => {
     if (!fullName.trim()) {
       setError("Full Name is required");
       return false;
     }
-
     if (!email.trim()) {
       setError("Email is required");
       return false;
     }
-
     if (!whatsapp.trim()) {
       setError("WhatsApp number is required");
       return false;
     }
-
     if (!password.trim()) {
       setError("Password is required");
       return false;
     }
-
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return false;
     }
-
     return true;
   };
 
+  // Fallback profile creation (RLS-safe)
+  const createProfileFallback = async (userId, fullNameValue, emailValue, whatsappValue) => {
+    try {
+      const { error } = await supabase.from("profiles").insert({
+        id: userId,
+        full_name: fullNameValue || "User",
+        email: emailValue || "",
+        whatsapp: whatsappValue || "",
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        console.warn("Fallback profile creation failed (may already exist):", error);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.warn("Fallback profile creation error:", err);
+      return false;
+    }
+  };
+
+  // Email/password signup
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
 
     if (!validateForm()) return;
-
     setLoading(true);
 
     try {
-      const { data: authData, error: signUpError } =
-        await supabase.auth.signUp({
-          email,
-          password,
-        });
-
-      if (signUpError) throw signUpError;
-
-      if (authData?.user) {
-        const { error: profileError } = await supabase.from("profiles").insert([
-          {
-            id: authData.user.id,
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
             full_name: fullName,
-            email,
-            whatsapp,
-            created_at: new Date().toISOString(),
+            whatsapp: whatsapp,
           },
-        ]);
+        },
+      });
 
-        if (profileError) throw profileError;
-
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session) {
-          navigate("/dashboard");
-        } else {
-          setSuccessMessage(
-            "Account created successfully! Please check your email to confirm your account."
-          );
+      if (signUpError) {
+        if (signUpError.message.includes("already registered")) {
+          throw new Error("This email is already registered. Please sign in instead.");
         }
+        throw signUpError;
+      }
+
+      if (!authData?.user) {
+        throw new Error("Failed to create user account");
+      }
+
+      // Wait briefly for user to fully appear in auth
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Create profile row in RLS-safe manner
+      await createProfileFallback(authData.user.id, fullName, email, whatsapp);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        navigate("/dashboard");
+      } else {
+        setSuccessMessage(
+          "Account created successfully! Please check your email to confirm your account."
+        );
+        setFullName("");
+        setEmail("");
+        setWhatsapp("");
+        setPassword("");
       }
     } catch (err) {
-      setError(err.message || "An error occurred during signup");
+      console.error("Signup error:", err);
+      setError(err.message || "An error occurred during signup. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Google OAuth signup
   const handleGoogleSignup = async () => {
     setError("");
     setGoogleLoading(true);
@@ -111,12 +175,21 @@ export default function Signup() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
 
       if (oauthError) throw oauthError;
     } catch (err) {
-      setError(err.message || "Failed to continue with Google");
+      console.error("Google signup error:", err);
+      setError(
+        err.message === "OAuth provider not configured"
+          ? "Google authentication is not available. Please use email/password signup."
+          : err.message || "Failed to continue with Google"
+      );
       setGoogleLoading(false);
     }
   };
@@ -145,7 +218,7 @@ export default function Signup() {
               </div>
             )}
 
-            <form onSubmit={handleSignup} className="space-y-3">
+            <form onSubmit={handleSignup} className="space-y-3" autoComplete="off">
               <input
                 type="text"
                 placeholder="Full Name"
@@ -153,6 +226,7 @@ export default function Signup() {
                 onChange={(e) => setFullName(e.target.value)}
                 className="input-field"
                 disabled={loading}
+                autoComplete="off"
               />
 
               <div className="relative">
@@ -163,8 +237,10 @@ export default function Signup() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="input-field pr-10"
                   disabled={loading}
+                  autoComplete="username"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                 />
-
                 <MdEmail className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 text-[18px]" />
               </div>
 
@@ -175,6 +251,7 @@ export default function Signup() {
                 onChange={(e) => setWhatsapp(e.target.value)}
                 className="input-field"
                 disabled={loading}
+                autoComplete="off"
               />
 
               <input
@@ -184,6 +261,9 @@ export default function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-field"
                 disabled={loading}
+                autoComplete="new-password"
+                data-lpignore="true"
+                data-1p-ignore="true"
               />
 
               <button type="submit" disabled={loading} className="btn-primary">
@@ -216,6 +296,7 @@ export default function Signup() {
           </div>
 
           <DownloadCard />
+          <VideoSection />
         </div>
       </AuthLayout>
 
