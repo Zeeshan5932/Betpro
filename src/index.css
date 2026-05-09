@@ -8,41 +8,167 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  background: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+button,
+input {
+  font-family: inherit;
+}
+
 @layer components {
-  .btn-primary {
-    @apply w-full h-12 bg-primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-success {
-    @apply w-full h-12 bg-success text-white font-semibold rounded-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-white {
-    @apply w-full h-12 bg-white text-gray-800 font-semibold rounded-lg hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300;
+  .auth-card {
+    @apply w-full max-w-[416px] mx-auto;
+    background: #2D4E69;
+    padding: 18px;
+    border-radius: 5px;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
   }
 
   .input-field {
-    @apply w-full h-12 px-4 py-3 bg-white text-gray-800 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-gray-500;
+    @apply w-full bg-white;
+    height: 48px;
+    padding: 0 10px;
+    color: #111827;
+    background-color: #ffffff !important;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 400;
   }
 
-  .card-shadow {
-    @apply shadow-lg;
+  .input-field::placeholder {
+    color: #5f6574;
+    font-weight: 400;
   }
 
-  .auth-card {
-    @apply bg-navy-dark rounded-lg p-5 w-full max-w-[416px] mx-auto card-shadow;
+/* Chrome Autofill Fix */
+input.input-field {
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+input.input-field:-webkit-autofill,
+input.input-field:-webkit-autofill:hover,
+input.input-field:-webkit-autofill:focus,
+input.input-field:-webkit-autofill:active {
+  -webkit-text-fill-color: #111827 !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  caret-color: #111827 !important;
+  border: none !important;
+  outline: none !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
+
+  .btn-primary {
+    @apply w-full;
+    height: 48px;
+    background: #478CD1;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.92;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .btn-success,
+  .btn-green {
+    @apply w-full;
+    height: 48px;
+    background: #59bf64;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-success:hover,
+  .btn-green:hover {
+    opacity: 0.92;
+  }
+
+  .btn-success:disabled,
+  .btn-green:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .btn-white {
+    @apply w-full bg-white;
+    height: 46px;
+    color: #17213d;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-white:hover {
+    opacity: 0.92;
+  }
+
+  .btn-white:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .auth-small-text {
+    color: #6ef7e7;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 400;
+  }
+
+  .download-card {
+    @apply w-full max-w-[416px] mx-auto text-center text-white;
+    background: #2D4E69;
+    padding: 34px 32px 36px;
+    border-radius: 5px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
+
+  .download-btn {
+    width: 164px;
+    height: 44px;
+    background: #478CD1;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
   }
 }

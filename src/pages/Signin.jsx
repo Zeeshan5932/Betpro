@@ -1,97 +1,94 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { FaGoogle } from 'react-icons/fa'
-import { supabase } from '../lib/supabase'
-import Header from '../components/Header'
-import AuthLayout from '../components/AuthLayout'
-import DownloadCard from '../components/DownloadCard'
-import WhatsAppButton from '../components/WhatsAppButton'
-import Footer from '../components/Footer'
-import LoadingButton from '../components/LoadingButton'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
+import { supabase } from "../lib/supabase";
+
+import Header from "../components/Header";
+import AuthLayout from "../components/AuthLayout";
+import DownloadCard from "../components/DownloadCard";
+import WhatsAppButton from "../components/WhatsAppButton";
+import Footer from "../components/Footer";
 
 export default function Signin() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (session) {
-        navigate('/dashboard')
+        navigate("/dashboard");
       }
-    }
-    checkSession()
-  }, [navigate])
+    };
+
+    checkSession();
+  }, [navigate]);
 
   const validateForm = () => {
     if (!email.trim()) {
-      setError('Email is required')
-      return false
+      setError("Email is required");
+      return false;
     }
+
     if (!password.trim()) {
-      setError('Password is required')
-      return false
+      setError("Password is required");
+      return false;
     }
-    return true
-  }
+
+    return true;
+  };
 
   const handleSignin = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
-    // Check if Supabase is configured
-    if (import.meta.env.VITE_SUPABASE_URL?.includes('placeholder')) {
-      setError('⚠️ Supabase not configured yet. Please set up your .env file with Supabase credentials to enable authentication.')
-      return
-    }
+    if (!validateForm()) return;
 
-    if (!validateForm()) {
-      return
-    }
-
-    setLoading(true)
+    setLoading(true);
 
     try {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
+      });
 
-      if (signInError) {
-        throw signInError
-      }
+      if (signInError) throw signInError;
 
-      navigate('/dashboard')
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.message || 'Failed to sign in')
+      setError(err.message || "Failed to sign in");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignin = async () => {
-    setError('')
-    setLoading(true)
+    setError("");
+    setGoogleLoading(true);
 
     try {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
         },
-      })
+      });
 
-      if (oauthError) {
-        throw oauthError
-      }
+      if (oauthError) throw oauthError;
     } catch (err) {
-      setError(err.message || 'Failed to sign in with Google')
-      setLoading(false)
+      setError(err.message || "Failed to continue with Google");
+      setGoogleLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -99,17 +96,19 @@ export default function Signin() {
       <WhatsAppButton />
 
       <AuthLayout>
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col items-center gap-5 w-full px-1 sm:px-4">
           <div className="auth-card">
-            <h2 className="text-white font-bold text-xl mb-6">Sign in to your Betpro account</h2>
+            <h2 className="text-white font-bold text-[20px] mb-5">
+              Login to Betpro wallet
+            </h2>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSignin} className="space-y-4">
+            <form onSubmit={handleSignin} className="space-y-3">
               <input
                 type="email"
                 placeholder="Email Address"
@@ -128,41 +127,42 @@ export default function Signin() {
                 disabled={loading}
               />
 
-              <LoadingButton
-                loading={loading}
-                type="submit"
-                className="btn-primary"
-              >
-                Sign in
-              </LoadingButton>
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? "Please wait..." : "Sign in"}
+              </button>
             </form>
 
-            <div className="my-6 flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-600"></div>
-              <span className="text-gray-400 text-sm">OR</span>
-              <div className="flex-1 h-px bg-gray-600"></div>
-            </div>
-
-            <button
-              onClick={handleGoogleSignin}
-              disabled={loading}
-              className="btn-white flex items-center justify-center gap-2 mb-4"
-            >
-              <FaGoogle size={18} />
-              Continue with Google
-            </button>
-
-            <p className="text-gray-400 text-sm text-center mb-3">
-              Don't have an account?{' '}
+            <div className="text-right mt-[20px]">
               <button
                 type="button"
-                onClick={() => navigate('/signup')}
-                className="text-accent hover:underline font-semibold"
-                disabled={loading}
+                className="text-white text-[14px] font-medium hover:underline"
               >
-                Sign up
+                Forgot password?
               </button>
+            </div>
+
+            <p className="auth-small-text mt-[6px] mb-[17px]">
+              Don&apos;t have an account?
             </p>
+
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              disabled={loading || googleLoading}
+              className="btn-green"
+            >
+              Create account
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignin}
+              disabled={loading || googleLoading}
+              className="btn-white flex items-center justify-center gap-3 mt-4"
+            >
+              <FcGoogle size={23} />
+              {googleLoading ? "Please wait..." : "Continue with Google"}
+            </button>
           </div>
 
           <DownloadCard />
@@ -171,5 +171,5 @@ export default function Signin() {
 
       <Footer />
     </div>
-  )
+  );
 }
