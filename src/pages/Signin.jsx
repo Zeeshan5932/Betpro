@@ -29,6 +29,13 @@ export default function Signin() {
 
   const [error, setError] = useState("");
 
+  const closeForgotPasswordModal = () => {
+    setForgotMode(false);
+    setResetError("");
+    setResetMessage("");
+    setResetIdentifier("");
+  };
+
   // Check session
   useEffect(() => {
     const checkSession = async () => {
@@ -124,138 +131,155 @@ export default function Signin() {
       <AuthLayout>
         <div className="flex flex-col items-center gap-5 w-full px-1 sm:px-4">
           <div className="auth-card">
-            {!forgotMode ? (
-              <>
-                <h2 className="text-white font-bold text-[20px] mb-5">
-                  Login to Betpro wallet
-                </h2>
+            <h2 className="text-white font-bold text-[20px] mb-5">
+              Login to Betpro wallet
+            </h2>
 
-                {error && (
-                  <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                    {error}
-                  </div>
-                )}
-
-                <form onSubmit={handleSignin} className="space-y-3" autoComplete="off">
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-field"
-                    disabled={loading}
-                    autoComplete="username"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Enter password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-field"
-                    disabled={loading}
-                    autoComplete="new-password"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                  />
-
-                  <button type="submit" disabled={loading} className="btn-primary">
-                    {loading ? "Please wait..." : "Sign in"}
-                  </button>
-                </form>
-
-                <div className="text-right mt-[20px]">
-                  <button
-                    type="button"
-                    onClick={() => setForgotMode(true)}
-                    className="text-white text-[14px] font-medium hover:underline"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-
-                <p className="auth-small-text mt-[6px] mb-[17px]">
-                  Don&apos;t have an account?
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/signup")}
-                  disabled={loading || googleLoading}
-                  className="btn-green"
-                >
-                  Create account
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignin}
-                  disabled={loading || googleLoading}
-                  className="btn-white flex items-center justify-center gap-3 mt-4"
-                >
-                  <FcGoogle size={23} />
-                  {googleLoading ? "Please wait..." : "Continue with Google"}
-                </button>
-              </>
-            ) : (
-              <>
-                <h2 className="text-white font-bold text-[22px] mb-2 text-center">
-                  Forgot Password?
-                </h2>
-                <p className="text-white text-[14px] mb-4 text-center">
-                  You will receive instructions for resetting your password.
-                </p>
-
-                {resetError && (
-                  <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-                    {resetError}
-                  </div>
-                )}
-
-                {resetMessage && (
-                  <div className="mb-3 p-2 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
-                    {resetMessage}
-                  </div>
-                )}
-
-                <form onSubmit={handleForgotSubmit} className="space-y-3" autoComplete="off">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={resetIdentifier}
-                      onChange={(e) => setResetIdentifier(e.target.value)}
-                      className="input-field pr-10"
-                      disabled={resetLoading}
-                    />
-                    <FaEnvelope
-                      size={16}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#17936F]"
-                    />
-                  </div>
-
-                  <button type="submit" disabled={resetLoading} className="btn-primary">
-                    {resetLoading ? "Please wait..." : "Send my Password"}
-                  </button>
-                </form>
-
-                <div className="text-center mt-3">
-                  <button
-                    type="button"
-                    onClick={() => setForgotMode(false)}
-                    className="text-white text-[13px] font-medium hover:underline"
-                  >
-                    Back to Sign in
-                  </button>
-                </div>
-              </>
+            {error && (
+              <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                {error}
+              </div>
             )}
+
+            <form onSubmit={handleSignin} className="space-y-3" autoComplete="off">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+                disabled={loading}
+                autoComplete="username"
+                data-lpignore="true"
+                data-1p-ignore="true"
+              />
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field"
+                disabled={loading}
+                autoComplete="new-password"
+                data-lpignore="true"
+                data-1p-ignore="true"
+              />
+
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? "Please wait..." : "Sign in"}
+              </button>
+            </form>
+
+            <div className="text-right mt-[20px]">
+              <button
+                type="button"
+                onClick={() => setForgotMode(true)}
+                className="text-white text-[14px] font-medium hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              className="auth-small-text mt-[6px] mb-[17px] w-full bg-transparent border-0 cursor-pointer hover:underline"
+            >
+              Don&apos;t have an account?
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              disabled={loading || googleLoading}
+              className="btn-green"
+            >
+              Create account
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignin}
+              disabled={loading || googleLoading}
+              className="btn-white flex items-center justify-center gap-3 mt-4"
+            >
+              <FcGoogle size={23} />
+              {googleLoading ? "Please wait..." : "Continue with Google"}
+            </button>
           </div>
 
           <DownloadCard />
           <VideoSection />
         </div>
+
+        {forgotMode && (
+          <div
+            className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4"
+            onClick={closeForgotPasswordModal}
+          >
+            <div
+              className="modal-panel w-full max-w-[560px] rounded-[5px] px-5 py-6 shadow-[0_16px_40px_rgba(0,0,0,0.35)] sm:px-8 bg-[#2a3f54]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="mb-2 text-center text-[22px] font-bold text-white">
+                Forgot Password?
+              </h2>
+              <p className="mb-5 text-center text-[14px] text-white/90">
+                You will receive instructions for resetting your password.
+              </p>
+
+              {resetError && (
+                <div className="mb-3 rounded border border-red-400 bg-red-100 p-2 text-sm text-red-700">
+                  {resetError}
+                </div>
+              )}
+
+              {resetMessage && (
+                <div className="mb-3 rounded border border-green-400 bg-green-100 p-2 text-sm text-green-700">
+                  {resetMessage}
+                </div>
+              )}
+
+              <form onSubmit={handleForgotSubmit} className="space-y-3" autoComplete="off">
+                <div className="relative">
+                  <input
+                    type="email"
+                    placeholder="Email or phone number"
+                    value={resetIdentifier}
+                    onChange={(e) => setResetIdentifier(e.target.value)}
+                    className="input-field pr-10"
+                    disabled={resetLoading}
+                  />
+                  <FaEnvelope
+                    size={16}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#17936F]"
+                  />
+                </div>
+
+                <button type="submit" disabled={resetLoading} className="btn-primary">
+                  {resetLoading ? "Please wait..." : "Send my Password"}
+                </button>
+              </form>
+
+              <div className="mt-4 flex items-center justify-between gap-4 text-sm">
+                <button
+                  type="button"
+                  onClick={closeForgotPasswordModal}
+                  className="text-white font-medium hover:underline"
+                >
+                  Back to Sign in
+                </button>
+                <button
+                  type="button"
+                  onClick={closeForgotPasswordModal}
+                  className="text-white/80 font-medium hover:text-white hover:underline"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </AuthLayout>
 
       <Footer />
