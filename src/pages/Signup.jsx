@@ -271,9 +271,16 @@ export default function Signup() {
               </button>
             </form>
 
-            <p className="auth-small-text mt-5 mb-4">
-              Already have an account?
-            </p>
+            <div className="mt-5 mb-4 text-center">
+              <button
+                type="button"
+                onClick={() => navigate("/signin")}
+                disabled={loading || googleLoading}
+                className="text-[#6ef7e7] text-[14px] font-medium hover:underline cursor-pointer"
+              >
+                Already have an account?
+              </button>
+            </div>
 
             <button
               type="button"

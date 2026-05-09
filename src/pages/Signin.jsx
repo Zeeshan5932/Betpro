@@ -175,16 +175,9 @@ export default function Signin() {
                   </button>
                 </div>
 
-                <div className="mt-[6px] mb-[17px] text-center">
-                  <button
-                    type="button"
-                    onClick={() => navigate("/signup")}
-                    disabled={loading || googleLoading}
-                    className="text-[#6ef7e7] text-[14px] font-medium hover:underline cursor-pointer"
-                  >
-                    Don&apos;t have an account?
-                  </button>
-                </div>
+                <p className="auth-small-text mt-[6px] mb-[17px]">
+                  Don&apos;t have an account?
+                </p>
 
                 <button
                   type="button"
