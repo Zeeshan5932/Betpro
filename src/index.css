@@ -30,9 +30,34 @@ input {
 }
 
 @layer components {
+  :root {
+    --primary-gradient: linear-gradient(#2e506c, #152337);
+    --primary-gradient-soft: linear-gradient(180deg, rgba(46, 80, 108, 0.98), rgba(21, 35, 55, 0.98));
+  }
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modalScaleIn {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
   .auth-card {
     @apply w-full max-w-[416px] mx-auto;
-    background: #2D4E69;
+    background: var(--primary-gradient);
     padding: 18px;
     border-radius: 5px;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
@@ -154,8 +179,13 @@ input.input-field:-webkit-autofill:active {
 
   .download-card {
     @apply w-full max-w-[416px] mx-auto text-center text-white;
+<<<<<<< HEAD
     background: #2D4E69;
     padding: 33px 31px 35px;
+=======
+    background: var(--primary-gradient);
+    padding: 34px 32px 36px;
+>>>>>>> b9a008ca7dc4235e9a729d52ba2a5246df926f75
     border-radius: 5px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
   }
@@ -163,7 +193,7 @@ input.input-field:-webkit-autofill:active {
   .download-btn {
     width: 164px;
     height: 44px;
-    background: #478CD1;
+    background: linear-gradient(#6883c7, #6883c7);;
     color: #ffffff;
     border: 1px solid #ffffff;
     border-radius: 4px;

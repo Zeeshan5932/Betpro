@@ -7,9 +7,9 @@ export default function VideoSection() {
     <div className="w-full py-8 px-4">
       <div className="max-w-[416px] mx-auto">
         {/* Title */}
-        <h3 className="text-center text-2xl font-semibold text-gray-900 mb-6">
-          How to activate Betpro{" "}
-          <span className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-1 rounded text-sm ml-2 align-middle">
+        <h3 className="text-center text-xl font-semibold text-gray-900 mb-6">
+          How to activate Betpro
+          <span className="inline-block text-white py-1 rounded text-sm ml-2 align-middle">
             🆔
           </span>
         </h3>

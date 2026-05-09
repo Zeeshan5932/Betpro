@@ -1,4 +1,4 @@
-import { FaDownload } from "react-icons/fa";
+import downloadImage from "../assets/image.png";
 
 export default function DownloadCard() {
   return (
@@ -17,7 +17,7 @@ export default function DownloadCard() {
       </p>
 
       <button className="download-btn flex items-center justify-center gap-3 mx-auto mt-8">
-        <FaDownload className="text-[17px]" />
+        <img src={downloadImage} alt="Download" className="w-[17px] h-[17px] object-contain" />
         Download Now
       </button>
     </div>
